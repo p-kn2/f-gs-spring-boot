@@ -28,3 +28,23 @@ jobs:
       - name: Verify JAR
         working-directory: complete
         run: ls -lh target/*.jar
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2
+
+      - name: Create deployment package
+        run: |
+          mkdir deployment
+          cp complete/target/*.jar deployment/app.jar
+          cp complete/appspec.yml deployment/
+          cp -r complete/scripts deployment/
+          cd deployment
+          zip -r ../deployment.zip .
+
+      - name: Upload deployment package to S3
+        run: |
+          aws s3 cp deployment.zip s3://maven-release-artifacts-779/deployment.zip
