@@ -20,9 +20,11 @@ jobs:
           java-version: '17'
 
       - name: Maven Build
+        working-directory: complete
         run: |
           chmod +x mvnw
           ./mvnw clean package
 
       - name: Verify JAR
+        working-directory: complete
         run: ls -lh target/*.jar
